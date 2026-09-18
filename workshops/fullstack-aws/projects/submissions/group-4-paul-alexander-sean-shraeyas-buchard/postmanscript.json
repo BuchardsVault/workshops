@@ -1,0 +1,500 @@
+{
+  "info": {
+    "_postman_id": "55302182-b5e3-40c3-80c0-25495cf2b566",
+    "name": "Simple Bank Application API (Object-Oriented)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "api",
+      "item": [
+        {
+          "name": "users",
+          "item": [
+            {
+              "name": "Create User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200 or 201', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                      "pm.test('Response is JSON', function () { pm.response.to.be.json; });",
+                      "pm.test('Response has user identifiers', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json).to.satisfy(function(j) { return j.hasOwnProperty('id') || j.hasOwnProperty('_id'); });",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser_{{$timestamp}}@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/users",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "users"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "login",
+              "item": [
+                {
+                  "name": "Login",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                          "pm.test('Response is JSON', function () { pm.response.to.be.json; });",
+                          "pm.test('Extract and persist JWT token', function () {",
+                          "    var json = pm.response.json();",
+                          "    var token = json.access_token || json.token;",
+                          "    pm.expect(token).to.not.be.undefined;",
+                          "    pm.collectionVariables.set('token', token);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@jane.com\",\n  \"username\": \"jane@jane.com\",\n  \"password\": \"pass1234\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/auth/login",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["api", "auth", "login"]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "accounts",
+          "item": [
+            {
+              "name": "Get All Accounts",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Response is JSON', function () { pm.response.to.be.json; });",
+                      "pm.test('Response is an array', function () { var json = pm.response.json(); pm.expect(json).to.be.an('array'); });"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/accounts",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "accounts"]
+                }
+              }
+            },
+            {
+              "name": "Create Account",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200 or 201', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                      "pm.test('Response is JSON', function () { pm.response.to.be.json; });",
+                      "pm.test('Capture account_id', function () {",
+                      "    var json = pm.response.json();",
+                      "    var accId = json.id || json.account_id || json.accountNumber || (json.account && json.account.id);",
+                      "    if (accId) { pm.collectionVariables.set('account_id', accId); }",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account_type\": \"checking\",\n  \"initial_deposit\": 100.0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/accounts",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "accounts"]
+                }
+              }
+            },
+            {
+              "name": "my-accounts",
+              "item": [
+                {
+                  "name": "Get My Accounts",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                          "pm.test('Response is JSON', function () { pm.response.to.be.json; });",
+                          "pm.test('Response is an array', function () { var json = pm.response.json(); pm.expect(json).to.be.an('array'); });"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/accounts/my-accounts",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["api", "accounts", "my-accounts"]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "{account_id}",
+              "item": [
+                {
+                  "name": "Get Account",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                          "pm.test('Response has account balance', function () {",
+                          "    var json = pm.response.json();",
+                          "    pm.expect(json).to.satisfy(function(j) { return j.hasOwnProperty('balance') || j.hasOwnProperty('account'); });",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/accounts/{{account_id}}",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["api", "accounts", "{{account_id}}"]
+                    }
+                  }
+                },
+                {
+                  "name": "deposit",
+                  "item": [
+                    {
+                      "name": "Deposit",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                              "pm.test('Response indicates success', function () {",
+                              "    var json = pm.response.json();",
+                              "    pm.expect(json).to.satisfy(function(j) { return j.hasOwnProperty('balance') || j.hasOwnProperty('message') || j.hasOwnProperty('account'); });",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"amount\": 50.0\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/accounts/{{account_id}}/deposit",
+                          "host": ["{{baseUrl}}"],
+                          "path": ["api", "accounts", "{{account_id}}", "deposit"]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "withdraw",
+                  "item": [
+                    {
+                      "name": "Withdraw",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                              "pm.test('Balance updated or returned', function () {",
+                              "    var json = pm.response.json();",
+                              "    pm.expect(json).to.satisfy(function(j) { return j.hasOwnProperty('balance') || j.hasOwnProperty('message') || j.hasOwnProperty('account'); });",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"amount\": 25.0\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/accounts/{{account_id}}/withdraw",
+                          "host": ["{{baseUrl}}"],
+                          "path": ["api", "accounts", "{{account_id}}", "withdraw"]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "transfer",
+                  "item": [
+                    {
+                      "name": "Transfer",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                              "pm.test('Transfer completed', function () {",
+                              "    var json = pm.response.json();",
+                              "    pm.expect(json).to.satisfy(function(j) { return j.hasOwnProperty('balance') || j.hasOwnProperty('message') || j.hasOwnProperty('transaction'); });",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"to_account_id\": 2,\n  \"amount\": 10.0\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/accounts/{{account_id}}/transfer",
+                          "host": ["{{baseUrl}}"],
+                          "path": ["api", "accounts", "{{account_id}}", "transfer"]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "transactions",
+                  "item": [
+                    {
+                      "name": "Get Transactions",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                              "pm.test('Response is an array', function () { var json = pm.response.json(); pm.expect(json).to.be.an('array'); });"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{token}}",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/accounts/{{account_id}}/transactions",
+                          "host": ["{{baseUrl}}"],
+                          "path": ["api", "accounts", "{{account_id}}", "transactions"]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SPA Catch-All Route",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Content-Type is HTML', function () { pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'); });",
+              "pm.test('Serves React SPA shell', function () { pm.expect(pm.response.text()).to.include('<div id=\"root\">'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["dashboard"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://9asif7ntt8.execute-api.us-east-1.amazonaws.com"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "account_id",
+      "value": "1"
+    }
+  ]
+}
