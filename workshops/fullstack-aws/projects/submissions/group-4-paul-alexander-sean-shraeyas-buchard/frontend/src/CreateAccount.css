@@ -1,0 +1,30 @@
+.field select {
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  color: var(--text-h);
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.field select:focus-visible {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+
+  .primary-button,
+  .secondary-button {
+    flex: 1;
+  }
+}

@@ -1,0 +1,71 @@
+.welcome-view {
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 64px 20px 56px;
+  text-align: center;
+
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.12) 0%,
+      rgba(59, 130, 246, 0.03) 60%,
+      transparent 100%
+    ),
+    var(--welcome-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  @media (max-width: 1024px) {
+    padding: 48px 20px 40px;
+    gap: 28px;
+  }
+}
+
+.welcome-content {
+  max-width: 480px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.welcome-title {
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: normal;
+  margin: 0 0 16px;
+  color: #2452c9;
+
+  @media (max-width: 1024px) {
+    font-size: 32px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .welcome-title {
+    color: #7fa8ff;
+  }
+}
+
+.welcome-subtitle {
+  font-size: 17px;
+  line-height: 145%;
+  color: var(--text);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+
+  .primary-button,
+  .secondary-button {
+    flex: 1;
+  }
+}
